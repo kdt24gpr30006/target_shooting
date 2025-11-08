@@ -1,0 +1,12 @@
+﻿################################################################################
+# この .gitignore ファイルは Microsoft(R) Visual Studio によって自動的に作成されました。
+################################################################################
+
+/target_shooting/Logs
+/target_shooting/obj
+/target_shooting/Library
+/target_shooting/.vsconfig
+/target_shooting/Assembly-CSharp-Editor.csproj
+/.vs
+/target_shooting/Assembly-CSharp.csproj
+/target_shooting/target_shooting.sln
