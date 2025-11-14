@@ -4,20 +4,29 @@ namespace MainScene
 {
     public class MainScene : MonoBehaviour
     {
+        // 玉のプレハブ
         [SerializeField]
         GameObject m_ballObj;
 
-        PlayerShotManager playerShotManager;
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
+        // 玉のスピード
+        [SerializeField]
+        private float m_speed = 1.0f;
+
+        // 玉の発射位置
+        [SerializeField]
+        private Transform m_shotStartPos;
+
+        // 玉の管理クラス
+        ShotManager m_shotManager;
+
         void Start()
         {
-            playerShotManager = GetComponent<PlayerShotManager>();
+            m_shotManager =  new ShotManager(m_ballObj, m_speed, m_shotStartPos);
         }
 
-        // Update is called once per frame
         void Update()
         {
-            playerShotManager.Update();
+            m_shotManager.Update();
         }
 
     } // class

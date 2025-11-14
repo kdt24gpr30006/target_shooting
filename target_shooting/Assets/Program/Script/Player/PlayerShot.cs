@@ -10,45 +10,48 @@ namespace MainScene
     // 玉のクラス
     public class PlayerShot
     {
-        GameObject m_shotObj;
+        // 玉のプレハブ
+        private GameObject m_shotObj;
 
-        public PlayerShot(GameObject obj)
+        // 玉のスピード
+        private float m_speed = 1.0f;
+
+        // これ以上離れたら消す
+        private const float m_maxDistance = 50.0f;
+
+        // 初期位置
+        private Vector3 m_startPos = Vector3.zero;
+
+        public PlayerShot(GameObject prefab, float argSpeed, Vector3 argStartPos)
         {
-            m_shotObj = obj;
+            // 生成
+            m_shotObj = Object.Instantiate(prefab);
+            // 初期位置
+            m_shotObj.transform.position = argStartPos;
+
+            // 初期位置を覚える
+            m_startPos = m_shotObj.transform.position;
+
+            // スピードを適応
+            m_speed = argSpeed;
+
         }
 
         public void Update()
         {
-        }
-    }
+            // nullチェック
+            if (m_shotObj == null) return;
 
-    // 玉のマネージャークラス
-    public class PlayerShotManager
-    {
-        // リストにする
-        List<PlayerShot> m_listShots;
+            // 玉の移動
+            m_shotObj.transform.position += Vector3.forward * m_speed * Time.deltaTime;
 
-        // コンストラクタ
-        public PlayerShotManager(GameObject obj)
-        {
-            // サイズ分生成
-            m_listShots = new List<PlayerShot>();
-
-            ////// 後でクリックしたらに帰る
-
-            // インスタンス生成
-            m_listShots.Add(new PlayerShot(obj));
-            // インスタンス削除
-            m_listShots.Remove(m_listShots[0]);
-        }
-
-        public void Update()
-        {
-            // 玉の更新処理を回す
-            foreach (var playerShot in m_listShots)
+            // 一定距離で削除
+            float dist = Vector3.Distance(m_startPos, m_shotObj.transform.position);
+            if (dist > m_maxDistance)
             {
-                playerShot.Update();
+                Object.Destroy(m_shotObj);
             }
         }
-    }
-}
+
+    } // class
+} // namespace
