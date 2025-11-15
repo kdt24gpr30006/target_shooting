@@ -6,27 +6,32 @@ namespace MainScene
     {
         // 玉のプレハブ
         [SerializeField]
-        GameObject m_ballObj;
-
+        private GameObject m_ballObj;
         // 玉のスピード
         [SerializeField]
         private float m_speed = 1.0f;
-
         // 玉の発射位置
         [SerializeField]
         private Transform m_shotStartPos;
-
         // 玉の管理クラス
-        ShotManager m_shotManager;
+        private ShotManager m_shotManager;
+
+        // 壁のプレハブ
+        [SerializeField]
+        private GameObject m_wallObj;
+        // 壁の管理クラス
+        private WallManager m_wallManager;
 
         void Start()
         {
             m_shotManager =  new ShotManager(m_ballObj, m_speed, m_shotStartPos);
+            m_wallManager = new WallManager(m_wallObj);
         }
 
         void Update()
         {
             m_shotManager.Update();
+
         }
 
     } // class
