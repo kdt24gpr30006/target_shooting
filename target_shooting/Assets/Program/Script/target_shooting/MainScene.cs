@@ -22,6 +22,12 @@ namespace MainScene
         // 壁の管理クラス
         private WallManager m_wallManager;
 
+        // 的のプレハブ
+        [SerializeField]
+        private GameObject m_targetObj;
+        // 的の管理クラス
+        private WallManager m_targetManager;
+
         void Start()
         {
             m_shotManager =  new ShotManager(m_ballObj, m_speed, m_shotStartPos);

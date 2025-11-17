@@ -19,9 +19,10 @@ namespace MainScene
             m_obj = Object.Instantiate(obj);
 
             // ç¿ïWÇÉâÉìÉ_ÉÄÇ…ê›íË
-            float pos_x = Random.Range(RANGE_X_MIN, RANGE_X_MAX);
-            float pos_z = Random.Range(RANGE_Z_MIN, RANGE_Z_MAX);
-            m_obj.transform.position = new Vector3(pos_x, 0.0f, pos_z);
+            float posX = Random.Range(RANGE_X_MIN, RANGE_X_MAX);
+            float posY = -5.0f;
+            float posZ = Random.Range(RANGE_Z_MIN, RANGE_Z_MAX);
+            m_obj.transform.position = new Vector3(posX, posY, posZ);
         }
     } // class
 }// namespace
