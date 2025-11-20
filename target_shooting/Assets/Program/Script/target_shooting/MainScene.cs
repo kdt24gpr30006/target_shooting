@@ -19,25 +19,23 @@ namespace MainScene
         // 壁のプレハブ
         [SerializeField]
         private GameObject m_wallObj;
-        // 壁の管理クラス
-        private WallManager m_wallManager;
-
         // 的のプレハブ
         [SerializeField]
         private GameObject m_targetObj;
-        // 的の管理クラス
-        private WallManager m_targetManager;
+
+        // ステージの管理クラス
+        private StageManager m_stageManager;
 
         void Start()
         {
             m_shotManager =  new ShotManager(m_ballObj, m_speed, m_shotStartPos);
-            m_wallManager = new WallManager(m_wallObj);
+            m_stageManager = new StageManager(m_wallObj, m_targetObj);
         }
 
         void Update()
         {
             m_shotManager.Update();
-
+            
         }
 
     } // class
