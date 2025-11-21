@@ -43,6 +43,7 @@ namespace MainScene
                 var playerShot = m_listShots[i];
                 playerShot.Update();
 
+                // 削除
                 if (playerShot.isDestroyed())
                 {
                     m_listShots.RemoveAt(i);
@@ -57,11 +58,11 @@ namespace MainScene
             // マウス座標を取得
             var mousePos = Input.mousePosition;
             // 奥行きを適当に設定
-            mousePos.z = 15.0f;
+            mousePos.z = 10.0f;
             // その座標を3D空間上に変換
             var targetPos = m_camera.ScreenToWorldPoint(mousePos);
             // 生成
-            m_listShots.Add(new PlayerShot(m_shotObj, m_startPos.position, targetPos, m_speed, this));
+            m_listShots.Add(new PlayerShot(m_shotObj, m_startPos.position, targetPos, m_speed));
         }
 
     } // class

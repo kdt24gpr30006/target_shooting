@@ -6,21 +6,36 @@ namespace MainScene
 {
     public class StageManager
     {
-        private const int WALL_MAX = 5;   // 柱の数
-        private const int TARGET_MAX = 5; // 的の数
+        // 柱の数
+        private const int WALL_MAX = 5;
+        // 的の数
+        private const int TARGET_MAX = 5;
+        // 合わせた数
+        private const int TOTAL_MAX = TARGET_MAX + WALL_MAX;
 
+        // 横幅
+        // 最小値
         private const float RANGE_X_MIN = -8.0f;
+        // 最大値
         private const float RANGE_X_MAX = 8.0f;
+        // 合計幅
+        private const float RANGE_X_WIDTH = RANGE_X_MAX - RANGE_X_MIN;
+        // ずらす幅
+        private const float SHIFT_X_WIDTH = RANGE_X_WIDTH / TOTAL_MAX;
 
+        // 奥行のランダム制限
         private const float RANGE_Z_MIN = 10.0f;
-        private const float RANGE_Z_MAX = 35.0f;
+        private const float RANGE_Z_MAX = 30.0f;
 
-        private const float MIN_DISTANCE = 2.0f; // 最小距離
+        // 最小距離
+        private const float MIN_DISTANCE = 1.0f;
 
         // 生成するオブジェクトのデータ
         private struct SpawnData
         {
+            // プレハブ
             public GameObject prefab;
+            // 座標
             public Vector3 position;
 
             public SpawnData(GameObject prefab, Vector3 position)
@@ -51,15 +66,27 @@ namespace MainScene
             GenerateObjects();
         }
 
+        public void Update()
+        {
+            // 的の削除処理を回す
+            for (int i = 0; i < m_targetObj.Count; ++i)
+            {
+                // 削除
+                if (m_targetObj[i].isDestroyed())
+                {
+                    m_targetObj.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+
         /// <summary>
-        /// 1. 置くものをシャッフル  
-        /// 2. 各オブジェクトに位置を割り当て  
-        /// → 生成予約リストに入れる
+        /// ステージを作る
         /// </summary>
         private void GenerateStage(GameObject wallPrefab, GameObject targetPrefab)
         {
+            // 各オブジェクトを追加する
             List<GameObject> objectsToSpawn = new List<GameObject>();
-
             for (int i = 0; i < WALL_MAX; i++)
             {
                 objectsToSpawn.Add(wallPrefab);
@@ -69,27 +96,38 @@ namespace MainScene
                 objectsToSpawn.Add(targetPrefab);
             }
 
+            // 追加したものの順番を混ぜる
             Shuffle(objectsToSpawn);
 
+            // 割り当て用のX座標
+            float x = RANGE_X_MIN;
+
+            // 順番に座標を設定していく
             foreach (var prefab in objectsToSpawn)
             {
-                Vector3? pos = RandomPosition();
+                // ランダムな座標取得
+                Vector3? pos = RandomPosition(x);
 
+                // ずらす
+                x += SHIFT_X_WIDTH;
+
+                // 座標が割り当てられていたら
                 if (pos.HasValue)
                 {
+                    // オブジェクト追加
                     m_spawnList.Add(new SpawnData(prefab, pos.Value));
                 }
             }
         }
 
         /// <summary>
-        /// SpawnList を元に Wall/Target を生成する
+        /// SpawnListを元に障害物を生成する
         /// </summary>
         private void GenerateObjects()
         {
+            // タグで生成するprefabを分ける
             foreach (var data in m_spawnList)
             {
-                // タグで生成するprefabを分ける
                 if (data.prefab.CompareTag("Wall"))
                 {
                     m_wallObj.Add(new Wall(data.prefab, data.position));
@@ -100,9 +138,7 @@ namespace MainScene
                 }
                 else
                 {
-                    Debug.LogWarning(
-                        $"未対応のタグで生成しようとしました: {data.prefab.tag}"
-                    );
+                    Debug.LogWarning($"未対応のタグです: {data.prefab.tag}");
                 }
             }
         }
@@ -110,26 +146,29 @@ namespace MainScene
         /// <summary>
         /// ランダム位置取得
         /// </summary>
-        private Vector3? RandomPosition()
+        private Vector3? RandomPosition(float x)
         {
-            float posX = Random.Range(RANGE_X_MIN, RANGE_X_MAX);
-            float posZ = Random.Range(RANGE_Z_MIN, RANGE_Z_MAX);
-
-            Vector3 newPos = new Vector3(posX, -5.0f, posZ);
-
-            int a = 0;
+            int missCount = 0;
 
             while (true)
             {
+                // ランダム座標設定
+                float posX = x;
+                float posZ = Random.Range(RANGE_Z_MIN, RANGE_Z_MAX);
+                Vector3 newPos = new Vector3(posX, -5.0f, posZ);
+     
+                // その位置がほかの障害物と重なってないか
                 if (CheckPosition(newPos))
                 {
                     m_spawnedPositions.Add(newPos);
                     return newPos;
                 }
 
-                a++;
-                if(a > 50)
+                // 50回以上重なっていたら
+                missCount++;
+                if (missCount > 50)
                 {
+                    // あきらめる
                     Debug.LogWarning("適切な位置が見つかりませんでした");
                     return null;
                 }
