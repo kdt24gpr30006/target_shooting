@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace MainScene
@@ -32,7 +33,7 @@ namespace MainScene
         public Target(GameObject prefab, Vector3 pos) : base(prefab, pos)
         {
             // 高さをランダムに
-            float posY = Random.Range(-30, 40);
+            float posY = UnityEngine.Random.Range(-30, 40);
             pos.y = posY / 10;
 
             // 初期座標, 角度設定
@@ -45,21 +46,35 @@ namespace MainScene
             handler.SetOwner(this);
         }
 
-
         // 当たった時
         public void OnHit()
         {
+            // スコアを増やす
+            var scoreObj = UnityEngine.Object.FindFirstObjectByType<Score>();
+
+            if (scoreObj != null)
+            {
+                scoreObj.AddScore();
+            }
+
             DestroySelf();
         }
 
         // 自分を削除
         private void DestroySelf()
         {
-            if (m_isDestroyed == false)
+            if (m_isDestroyed) 
             {
-                Object.Destroy(instance);
-                m_isDestroyed = true;
+                return;
             }
+
+            if (instance != null)
+            {
+                UnityEngine.Object.Destroy(instance);
+            }
+
+            instance = null;
+            m_isDestroyed = true;
         }
 
         public bool isDestroyed()

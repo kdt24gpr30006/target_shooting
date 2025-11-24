@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace MainScene
     public class ShotCollisionHandler : MonoBehaviour
     {
         // 対応するPlayerShotを設定
-        private PlayerShot owner;    
+        private PlayerShot owner;
         public void SetOwner(PlayerShot shot)
         {
             owner = shot;
@@ -41,7 +42,7 @@ namespace MainScene
         public PlayerShot(GameObject prefab, Vector3 argStartPos, Vector3 argTargetPos, float argSpeed)
         {
             // 生成
-            m_shotObj = Object.Instantiate(prefab);
+            m_shotObj = UnityEngine.Object.Instantiate(prefab);
             // 初期位置
             m_shotObj.transform.position = argStartPos;
             // 初期位置を覚える
@@ -59,13 +60,16 @@ namespace MainScene
             var rb = m_shotObj.GetComponent<Rigidbody>();
             if (rb != null)
             {
-               rb.AddForce(dir * argSpeed);
+                rb.AddForce(dir * argSpeed);
             }
         }
 
         public void Update()
         {
-            // 一定距離で削除
+            // 既に破棄済みなら処理しない
+            if (m_isDestroyed || m_shotObj == null) return;
+
+            // 最大距離チェック
             float dist = Vector3.Distance(m_startPos, m_shotObj.transform.position);
             if (dist > m_maxDistance)
             {
@@ -76,17 +80,21 @@ namespace MainScene
         // 当たった時
         public void OnHit()
         {
-            DestroySelf();           
+            DestroySelf();
         }
 
         // 自分を削除
         private void DestroySelf()
         {
-            if (m_isDestroyed == false)
+            if (m_isDestroyed) return;
+
+            if (m_shotObj != null)
             {
-                Object.Destroy(m_shotObj);
-                m_isDestroyed = true;
+                UnityEngine.Object.Destroy(m_shotObj);
             }
+
+            m_shotObj = null;
+            m_isDestroyed = true;
         }
 
         public bool isDestroyed()
@@ -95,4 +103,4 @@ namespace MainScene
         }
 
     } // class
-} // namespace
+} // namespace 
