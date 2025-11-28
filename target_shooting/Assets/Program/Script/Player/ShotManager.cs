@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace MainScene
 {
-    // 玉のマネージャークラス
+    
+    /// <summary>
+    /// 球のマネージャークラス 
+    /// </summary>
     public class ShotManager
     {
         // リスト
@@ -31,20 +34,20 @@ namespace MainScene
 
         public void Update()
         {
-            // クリックで玉を生成
+            // クリックで球を生成
             if (Input.GetMouseButtonDown(0))
             {
                 Shot();
             }
 
-            // 玉の更新処理を回す
+            // 球の更新処理を回す
             for (int i = 0; i < m_listShots.Count; ++i)
             {
                 var playerShot = m_listShots[i];
                 playerShot.Update();
 
-                // 削除
-                if (playerShot.isDestroyed())
+                // 球がnullなら削除
+                if (playerShot.IsDestroyed())
                 {
                     m_listShots.RemoveAt(i);
                     i--;
@@ -52,7 +55,7 @@ namespace MainScene
             }
         }
 
-        // 玉を生成
+        // 球を生成
         private void Shot()
         {
             // マウス座標を取得

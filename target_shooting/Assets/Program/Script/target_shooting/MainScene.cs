@@ -4,16 +4,16 @@ namespace MainScene
 {
     public class MainScene : MonoBehaviour
     {
-        // 玉のプレハブ
+        // 球のプレハブ
         [SerializeField]
         private GameObject m_ballObj;
-        // 玉のスピード
+        // 球のスピード
         [SerializeField]
         private float m_speed = 1.0f;
-        // 玉の発射位置
+        // 球の発射位置
         [SerializeField]
         private Transform m_shotStartPos;
-        // 玉の管理クラス
+        // 球の管理クラス
         private ShotManager m_shotManager;
 
         // 壁のプレハブ

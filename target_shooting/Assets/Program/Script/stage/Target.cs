@@ -18,7 +18,14 @@ namespace MainScene
             // ‘Šè‚ªShot‚Ìê‡Á–Å
             if (collision.gameObject.CompareTag("Shot"))
             {
-                // PlayerShot‘¤‚ÉÕ“Ë‚ğ‘—‚é
+                // “–‚½‚Á‚½‹…‚©‚çShotDestroyer‚ğæ“¾‚µAíœ‚ğ‚·‚é
+                var shotDestroyer = collision.gameObject.GetComponent<ShotDestroyer>();
+                if (shotDestroyer != null)
+                {
+                    shotDestroyer.DestroyShot();
+                }
+
+                // “I‘¤‚Ì‚ ‚½‚Á‚½‚Ìˆ—‚ğŒÄ‚Ô
                 owner.OnHit();
             }
         }
