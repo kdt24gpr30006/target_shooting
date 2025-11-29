@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -47,53 +48,84 @@ namespace MainScene
 
         private List<SpawnData> m_spawnList;
 
-        private List<Wall> m_wallObj;
-        private List<Target> m_targetObj;
+        // 生成するオブジェクトのリスト
+        private List<Wall> m_wallList;
+        private List<Target> m_targetList;
 
         // 生成座標の記録
-        private List<Vector3> m_spawnedPositions;
+        private List<Vector3> m_spawnedPosition;
+
+        private GameObject m_wallObj;
+        private GameObject m_targetObj;
+        private ScoreText m_textObj;
 
         // コンストラクタ
-        public StageManager(GameObject wallPrefab, GameObject targetPrefab)
+        public StageManager(GameObject wallPrefab, GameObject targetPrefab, ScoreText scoreText)
         {
             m_spawnList = new List<SpawnData>();
-            m_wallObj = new List<Wall>();
-            m_targetObj = new List<Target>();
-            m_spawnedPositions = new List<Vector3>();
+            m_wallList = new List<Wall>();
+            m_targetList = new List<Target>();
+            m_spawnedPosition = new List<Vector3>();
 
-
-            GenerateStage(wallPrefab, targetPrefab);
-            GenerateObjects();
+            m_wallObj = wallPrefab;
+            m_targetObj = targetPrefab;
+            m_textObj = scoreText;
         }
 
         public void Update()
         {
             // 的の削除処理を回す
-            for (int i = 0; i < m_targetObj.Count; ++i)
+            for (int i = 0; i < m_targetList.Count; ++i)
             {
                 // 削除
-                if (m_targetObj[i].isDestroyed())
+                if (m_targetList[i].isDestroyed())
                 {
-                    m_targetObj.RemoveAt(i);
+                    UnityEngine.Debug.Log("残りの的の数" + m_targetList.Count);
+                    m_targetList.RemoveAt(i);
                     i--;
+
                 }
             }
         }
 
         /// <summary>
-        /// ステージを作る
+        /// ステージを生成する
         /// </summary>
-        private void GenerateStage(GameObject wallPrefab, GameObject targetPrefab)
+        public void CreateStage()
+        {
+            GenerateStage();
+            GenerateObjects();
+        }
+
+        /// <summary>
+        /// クリアしたか
+        /// </summary>
+        /// <returns></returns>
+        public bool IsClear()
+        {
+            // すべての的が消えていたら
+            if (m_targetList.Count == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// オブジェクトを情報を作る
+        /// </summary>
+        private void GenerateStage()
         {
             // 各オブジェクトを追加する
             List<GameObject> objectsToSpawn = new List<GameObject>();
             for (int i = 0; i < WALL_MAX; i++)
             {
-                objectsToSpawn.Add(wallPrefab);
+                objectsToSpawn.Add(m_wallObj);
             }
             for (int i = 0; i < TARGET_MAX; i++)
             {
-                objectsToSpawn.Add(targetPrefab);
+                objectsToSpawn.Add(m_targetObj);
             }
 
             // 追加したものの順番を混ぜる
@@ -130,15 +162,15 @@ namespace MainScene
             {
                 if (data.prefab.CompareTag("Wall"))
                 {
-                    m_wallObj.Add(new Wall(data.prefab, data.position));
+                    m_wallList.Add(new Wall(data.prefab, data.position));
                 }
                 else if (data.prefab.CompareTag("Target"))
                 {
-                    m_targetObj.Add(new Target(data.prefab, data.position));
+                    m_targetList.Add(new Target(data.prefab, data.position, m_textObj));
                 }
                 else
                 {
-                    Debug.LogWarning($"未対応のタグです: {data.prefab.tag}");
+                    UnityEngine.Debug.LogWarning($"未対応のタグです: {data.prefab.tag}");
                 }
             }
         }
@@ -148,6 +180,7 @@ namespace MainScene
         /// </summary>
         private Vector3? RandomPosition(float x)
         {
+            // 生成できなかったか
             int missCount = 0;
 
             while (true)
@@ -156,11 +189,11 @@ namespace MainScene
                 float posX = x;
                 float posZ = Random.Range(RANGE_Z_MIN, RANGE_Z_MAX);
                 Vector3 newPos = new Vector3(posX, -5.0f, posZ);
-     
+
                 // その位置がほかの障害物と重なってないか
                 if (CheckPosition(newPos))
                 {
-                    m_spawnedPositions.Add(newPos);
+                    m_spawnedPosition.Add(newPos);
                     return newPos;
                 }
 
@@ -169,7 +202,7 @@ namespace MainScene
                 if (missCount > 50)
                 {
                     // あきらめる
-                    Debug.LogWarning("適切な位置が見つかりませんでした");
+                    UnityEngine.Debug.LogWarning("適切な位置が見つかりませんでした");
                     return null;
                 }
             }
@@ -180,7 +213,7 @@ namespace MainScene
         /// </summary>
         private bool CheckPosition(Vector3 newPos)
         {
-            foreach (Vector3 existingPos in m_spawnedPositions)
+            foreach (Vector3 existingPos in m_spawnedPosition)
             {
                 if (Vector3.Distance(newPos, existingPos) < MIN_DISTANCE)
                     return false;

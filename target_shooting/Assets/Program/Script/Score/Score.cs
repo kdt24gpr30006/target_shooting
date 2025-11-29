@@ -1,29 +1,44 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Score : MonoBehaviour
+namespace MainScene
 {
-    [SerializeField]
-    private Text Scoretext;
-
-    private int m_maxScore = 5;
-    private int m_score = 5;
-
-    void Start()
+    public class ScoreText
     {
-        UpdateScoreText();
-    }
+        // テキスト
+        private Text m_scoreText;
 
-    private void UpdateScoreText()
-    {
-        Scoretext.text = "残り的数 : " + m_score + "/" + m_maxScore;
-    }
+        // 最大数
+        private int m_maxScore = 5;
+        // 現在
+        private int m_score = 5;
 
-    // 的が破壊されたときに呼ぶ
-    public void AddScore()
-    {
-        // スコア追加して反映
-        m_score--;
-        UpdateScoreText();
+        public ScoreText(Text arg_scoreText)
+        {
+            m_scoreText = arg_scoreText;
+            UpdateScoreText();
+            // 最初は表示しない
+            m_scoreText.gameObject.SetActive(false);
+        }
+
+        // 文字列を更新する
+        private void UpdateScoreText()
+        {
+            m_scoreText.text = "残り的数 : " + m_score + "/" + m_maxScore;
+        }
+
+        // 的が破壊されたときスコアを増やす
+        public void AddScore()
+        {
+            // スコア追加して反映
+            m_score--;
+            UpdateScoreText();
+        }
+
+        // 描画するか切り替える
+        public void ChangeActive(bool arg_active)
+        {
+            m_scoreText.gameObject.SetActive(arg_active);
+        }
     }
 }

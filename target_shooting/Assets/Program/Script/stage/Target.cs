@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MainScene
 {
-    // 当たり判定用のMonoBehaviourのclass
+    // 当たり判定用のclass
     public class TargetCollisionHandler : MonoBehaviour
     {
         // 対応するTargetを設定
@@ -15,6 +16,7 @@ namespace MainScene
 
         private void OnCollisionEnter(Collision collision)
         {
+            UnityEngine.Debug.Log("あたった");
             // 相手がShotの場合消滅
             if (collision.gameObject.CompareTag("Shot"))
             {
@@ -34,10 +36,11 @@ namespace MainScene
     // 的クラス
     public class Target : Obstacle
     {
+        private ScoreText m_text;
         // 削除フラグ
         private bool m_isDestroyed = false;
 
-        public Target(GameObject prefab, Vector3 pos) : base(prefab, pos)
+        public Target(GameObject prefab, Vector3 pos, ScoreText scoreText) : base(prefab, pos)
         {
             // 高さをランダムに
             float posY = UnityEngine.Random.Range(-30, 40);
@@ -47,6 +50,7 @@ namespace MainScene
             instance.transform.position = pos;
             instance.transform.rotation = Quaternion.Euler(0, 180, 0);
 
+            m_text = scoreText;
 
             // 当たり判定用のコンポーネント追加
             var handler = instance.AddComponent<TargetCollisionHandler>();
@@ -57,12 +61,7 @@ namespace MainScene
         public void OnHit()
         {
             // スコアを増やす
-            var scoreObj = UnityEngine.Object.FindFirstObjectByType<Score>();
-
-            if (scoreObj != null)
-            {
-                scoreObj.AddScore();
-            }
+            m_text.AddScore();
 
             DestroySelf();
         }
@@ -70,7 +69,7 @@ namespace MainScene
         // 自分を削除
         private void DestroySelf()
         {
-            if (m_isDestroyed) 
+            if (m_isDestroyed)
             {
                 return;
             }
