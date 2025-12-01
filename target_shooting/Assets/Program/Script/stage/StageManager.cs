@@ -11,15 +11,11 @@ namespace MainScene
         private const int WALL_MAX = 5;
         // 的の数
         private const int TARGET_MAX = 5;
-        // 合わせた数
         private const int TOTAL_MAX = TARGET_MAX + WALL_MAX;
 
         // 横幅
-        // 最小値
         private const float RANGE_X_MIN = -8.0f;
-        // 最大値
         private const float RANGE_X_MAX = 8.0f;
-        // 合計幅
         private const float RANGE_X_WIDTH = RANGE_X_MAX - RANGE_X_MIN;
         // ずらす幅
         private const float SHIFT_X_WIDTH = RANGE_X_WIDTH / TOTAL_MAX;
@@ -238,5 +234,23 @@ namespace MainScene
             }
         }
 
+        public void Reset()
+        {
+            // 壁オブジェクトを全て破棄
+            foreach (var wall in m_wallList)
+            {
+                wall.DestroyObject();
+            }
+            m_wallList.Clear();
+
+            // 的オブジェクトを全て破棄
+            foreach (var target in m_targetList)
+            {
+                target.DestroyObject();
+            }
+            m_targetList.Clear();
+
+            m_spawnList.Clear();
+        }
     } // class
 } // namespace

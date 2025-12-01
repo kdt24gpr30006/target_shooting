@@ -16,16 +16,11 @@ namespace MainScene
 
         private void OnCollisionEnter(Collision collision)
         {
-            UnityEngine.Debug.Log("あたった");
             // 相手がShotの場合消滅
             if (collision.gameObject.CompareTag("Shot"))
             {
-                // 当たった球からShotDestroyerを取得し、削除をする
-                var shotDestroyer = collision.gameObject.GetComponent<ShotDestroyer>();
-                if (shotDestroyer != null)
-                {
-                    shotDestroyer.DestroyShot();
-                }
+                // 当たった球を削除
+                collision.gameObject.GetComponent<ShotDestroyer>()?.DestroyShot();
 
                 // 的側のあたった時の処理を呼ぶ
                 owner.OnHit();
@@ -36,58 +31,59 @@ namespace MainScene
     // 的クラス
     public class Target : Obstacle
     {
+        private const float Y_MIN = -3;
+        private const float Y_MAX = 4;
+
+        // スコア表示用
         private ScoreText m_text;
+
         // 削除フラグ
         private bool m_isDestroyed = false;
 
         public Target(GameObject prefab, Vector3 pos, ScoreText scoreText) : base(prefab, pos)
         {
             // 高さをランダムに
-            float posY = UnityEngine.Random.Range(-30, 40);
-            pos.y = posY / 10;
+            pos.y = UnityEngine.Random.Range(Y_MIN, Y_MAX);
 
             // 初期座標, 角度設定
-            instance.transform.position = pos;
-            instance.transform.rotation = Quaternion.Euler(0, 180, 0);
+            m_object.transform.position = pos;
+            m_object.transform.rotation = Quaternion.Euler(0, 180, 0);
 
+            // テキスト取得
             m_text = scoreText;
 
             // 当たり判定用のコンポーネント追加
-            var handler = instance.AddComponent<TargetCollisionHandler>();
+            var handler = m_object.AddComponent<TargetCollisionHandler>();
             handler.SetOwner(this);
         }
 
         // 当たった時
         public void OnHit()
         {
-            // スコアを増やす
             m_text.AddScore();
-
             DestroySelf();
         }
 
         // 自分を削除
         private void DestroySelf()
         {
-            if (m_isDestroyed)
+            if (m_isDestroyed == true && m_object == null)
             {
                 return;
             }
 
-            if (instance != null)
-            {
-                UnityEngine.Object.Destroy(instance);
-            }
+            // オブジェクトを削除
+            UnityEngine.Object.Destroy(m_object);
 
-            instance = null;
+            m_object = null;
             m_isDestroyed = true;
         }
 
+        // 削除されたか
         public bool isDestroyed()
         {
             return m_isDestroyed;
         }
-
 
     } // class
 }// namespace

@@ -51,11 +51,21 @@ namespace MainScene
             }
         }
 
-        // PlayerShot側から削除状態を見れるように
+        // マネージャ-側から削除状態を見れるように
         public bool IsDestroyed()
         {
             // m_shotObjがnullなら破棄済みとみなす
             return m_shotObj == null;
+        }
+
+        // オブジェクトを破棄する
+        public void DestroyObject()
+        {
+            if (m_shotObj != null)
+            {
+                UnityEngine.Object.Destroy(m_shotObj);
+                m_shotObj = null;
+            }
         }
     } // class
 } // namespace 

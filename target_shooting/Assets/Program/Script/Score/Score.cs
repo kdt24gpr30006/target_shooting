@@ -16,9 +16,9 @@ namespace MainScene
         public ScoreText(Text arg_scoreText)
         {
             m_scoreText = arg_scoreText;
-            UpdateScoreText();
             // Å‰‚Í•\¦‚µ‚È‚¢
             m_scoreText.gameObject.SetActive(false);
+            Init();
         }
 
         // •¶š—ñ‚ğXV‚·‚é
@@ -39,6 +39,13 @@ namespace MainScene
         public void ChangeActive(bool arg_active)
         {
             m_scoreText.gameObject.SetActive(arg_active);
+        }
+
+        // ‰Šú‰»
+        public void Init()
+        {
+            m_score = 5;
+            UpdateScoreText();
         }
     }
 }

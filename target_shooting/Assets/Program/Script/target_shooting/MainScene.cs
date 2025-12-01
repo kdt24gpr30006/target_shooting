@@ -14,10 +14,6 @@ namespace MainScene
             SCENE_CLEAR,
         }
 
-        // 現在のシーン状態
-        [SerializeField]
-        private SceneState m_nowState = SceneState.SCENE_TITLE;
-
         // 球のプレハブ
         [SerializeField]
         private GameObject m_ballObj;
@@ -46,6 +42,8 @@ namespace MainScene
         [SerializeField]
         private Text m_scoreTextObj;
 
+        // 現在のシーン状態
+        private SceneState m_nowState = SceneState.SCENE_TITLE;
 
         // 球の管理クラス
         private ShotManager m_shotManager;
@@ -78,6 +76,7 @@ namespace MainScene
                         m_scoreText.ChangeActive(true);
                         m_nowState = SceneState.SCENE_PLAY;
                         UnityEngine.Debug.Log("げーむすたーと");
+                    m_scoreText.Init();
                     }
                     break;
                 case SceneState.SCENE_PLAY:
@@ -96,9 +95,16 @@ namespace MainScene
                 case SceneState.SCENE_CLEAR:
                     UnityEngine.Debug.Log("くりあ");
                     m_title.ChangeActive(true);
+                    Reset();
                     m_nowState = SceneState.SCENE_TITLE;
                     break;
             }
+        }
+
+        void Reset()
+        {
+            m_shotManager.Reset();
+            m_stageManager.Reset();
         }
     } // class
 } // namespace

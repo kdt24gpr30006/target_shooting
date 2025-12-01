@@ -68,5 +68,15 @@ namespace MainScene
             m_listShots.Add(new PlayerShot(m_shotObj, m_startPos.position, targetPos, m_speed));
         }
 
+        public void Reset()
+        {
+            // 球オブジェクトを全て破棄
+            foreach (var shot in m_listShots)
+            {
+                shot.DestroyObject();
+            }
+            m_listShots.Clear();
+        }
+
     } // class
 } // namespace
